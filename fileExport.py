@@ -141,11 +141,22 @@ class CellExport(object):
         self.saveCell(folderPath, fileName, layers = layers, fmt = fmt, mapping = mapping)
    
 def exp(*args, **kwargs):
-    cellName     = kwargs["cell"]
-    layout       = pya.Application.instance().main_window().current_view().active_cellview().layout().dup()  
-    cell         = layout.cell(cellName)
-    if cell:
-        CellExport(cell).outputCell(**kwargs)
-    else:
+    cellName = kwargs["cell"]
+    cv       = pya.Application.instance().main_window().current_view()
+    
+    if not (cv):
+        print (f"No layout avaliable")
+        return 
+        
+    layout = cv.active_cellview().layout().dup()  
+    cell   = layout.cell(cellName)
+    
+    if not(cell):
         print (f"cell '{cellName}' not exist")
+        return 
+        
+    CellExport(cell).outputCell(**kwargs)
+
+        
+    
     
