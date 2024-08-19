@@ -32,6 +32,9 @@ class HeaderSelItem(pya.QWidget):
             "Origin", 
             "Warning", 
         ]
+        self.initUI(index, columnTitle)
+        
+    def initUI(self, index = 0, columnTitle = ""):
         self.idLB      = pya.QLabel()
         self.optionCMB = pya.QComboBox()
         self.layout    = pya.QHBoxLayout()
@@ -43,9 +46,11 @@ class HeaderSelItem(pya.QWidget):
         self.setLayout(self.layout)
         self.setValue(columnTitle)
         self.setLabelIndex(index)
+        self.layout.setContentsMargins(5, 5, 5, 5)
+        self.layout.setSpacing(0)
 
     def setLabelIndex(self, index):
-        self.idLB.setText(f"#{index}")
+        self.idLB.setText(f"#{str(index).zfill(2)}")
 
     def setIndex(self, index):
         index = 0 if index< len(self.opt) else index
@@ -61,6 +66,6 @@ class HeaderSelItem(pya.QWidget):
         return self.optionCMB.currentText
 
 if __name__ == "__main__":
-    hsi = HeaderSelectItem(0, "Cell XLB")
+    hsi = HeaderSelItem(0, "Cell XLB")
     hsi.show()
     

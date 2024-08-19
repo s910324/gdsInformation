@@ -8,6 +8,7 @@ class HeaderSelList(pya.QListWidget):
         super().__init__()
         self.data = []
         self.loadSettings()
+        
 
     def addColumnItem(self, columnName = ""):
         lwidget = HeaderSelItem(self.count + 1, columnName, self)

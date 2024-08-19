@@ -17,9 +17,10 @@ class LayoutChkWidget(pya.QWidget):
         self.layout.addWidget(self.infoW)
         self.setLayout(self.layout)
         self.resize(1280, 600)
-        self.ctrlW.setFixedWidth(290)
+        self.ctrlW.setFixedWidth(200)
         self.setWindowTitle("Layout Info")
         self.ctrlW.setPB.clicked.connect(lambda : self.infoW.setHeaders(self.ctrlW.headers()))  
+        
         
     def saveSettings(self):
         self.ctrlW.saveSettings()

@@ -1,3 +1,4 @@
+import os
 import pya
 from ui_headerSelList import HeaderSelList
 
@@ -9,13 +10,13 @@ class HeaderSelCtrl(pya.QListWidget):
 
     def initUI(self):
         self.listW     = HeaderSelList()
-        self.addPB     = pya.QPushButton("add")
-        self.delPB     = pya.QPushButton("del")
-        self.mvTopPB   = pya.QPushButton("top")
-        self.mvUpPB    = pya.QPushButton("up")
-        self.mvDownPB  = pya.QPushButton("down")
-        self.mvEndPB   = pya.QPushButton("end")
-        self.setPB     = pya.QPushButton("set")
+        self.addPB     = pya.QPushButton(icon = self.svgIcon("square-plus-solid"),  text = "")
+        self.delPB     = pya.QPushButton(icon = self.svgIcon("square-minus-solid"), text = "")
+        self.mvTopPB   = pya.QPushButton(icon = self.svgIcon("angles-up-solid"),    text = "")
+        self.mvUpPB    = pya.QPushButton(icon = self.svgIcon("angle-up-solid"),     text = "")
+        self.mvDownPB  = pya.QPushButton(icon = self.svgIcon("angle-down-solid"),   text = "")
+        self.mvEndPB   = pya.QPushButton(icon = self.svgIcon("angles-down-solid"),  text = "")
+        self.setPB     = pya.QPushButton(icon = self.svgIcon("circle-check-solid"), text = "")
         self.layout    = pya.QGridLayout()
         
         self.layout.addWidget(self.listW,    0, 1,10, 1)
@@ -32,6 +33,19 @@ class HeaderSelCtrl(pya.QListWidget):
         self.layout.setRowStretch      (7,  1)
         
         self.setLayout(self.layout)
+        self.layout.setSpacing(5)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        
+        self.setLineWidth(0)
+        self.setFrameShape(pya.QFrame.Panel)
+        self.setFrameShadow(pya.QFrame.Plain)
+
+        theme = """
+        QListWidget{
+            background-color : #f0f0f0;
+        }
+        """
+        self.setStyleSheet(theme)
         
     def initSignal(self):
         self.addPB.clicked.connect(self.addItem)
@@ -75,7 +89,21 @@ class HeaderSelCtrl(pya.QListWidget):
     def closeEvent(self, event):
         self.saveSettings()
         event.accept()
-        
+
+    def svgIcon(self, name, size = (12, 12), color = pya.QColor(0,0,0,150)):
+        dirPath   = os.path.dirname(__file__) 
+        genPath   = lambda rPath : os.path.realpath(os.path.join(dirPath, *rPath.split("/")))
+        iconPath  = genPath("../icon")
+        renderer  = pya.QSvgRenderer(f"{iconPath}/{name}.svg")
+        pixmap    = pya.QPixmap(size[0], size[1])
+        pixmap.fill(pya.QColor(0,0,0,0))
+        painter   = pya.QPainter(pixmap)
+        renderer.render(painter)
+        painter.setCompositionMode(painter.CompositionMode.CompositionMode_SourceIn)
+        painter.fillRect(pixmap.rect(), color)
+        painter.end()
+        return pya.QIcon(pixmap)
+
 if __name__ == "__main__" :
     w = HeaderSelCtrl()
     w.show()

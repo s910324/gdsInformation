@@ -22,13 +22,16 @@ class InfoWidget(pya.QWidget):
             "Warning", 
         ]
         self.infoT    = InfoTableWidget()
-        self.browsePB = pya.QPushButton("Browse")
+        self.browsePB = pya.QPushButton("Browse gds")
         self.layout   = pya.QVBoxLayout()
 
         self.layout.addWidget(self.infoT)
         self.layout.addWidget(self.browsePB)
         self.setLayout(self.layout)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(0)
         self.browsePB.clicked(self.query)
+        
         
     def setHeaders(self, headers):
         self.headers = headers
