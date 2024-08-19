@@ -1,6 +1,4 @@
-# $description: gds info
-# $autorun
-# $menu-path: Tools
+
 import os
 import sys
 import pya
@@ -81,6 +79,7 @@ class LayoutTableWidget(pya.QTableWidget):
             else:
                 copyText += '\t'
         pya.QApplication.clipboard().setText(copyText)
+        pya.QToolTip.showText(pya.QCursor.pos, "Information Copied to Clipboard")
  
     def setData(self, data = [], headers = []):
         self.clearContents()
@@ -109,11 +108,6 @@ class LayoutTableWidget(pya.QTableWidget):
         super(LayoutTableWidget, self).clearContents() 
 
 if __name__ == "__main__" :
-    mw        = pya.Application.instance().main_window()
-    lcw       = LayoutCheckWidget()
-    act       = pya.Action()
-    act.title = "gds check"
-    act.on_triggered(lambda : lcw.show())
 
-    mw.menu().insert_item("@toolbar.end", "gds check", act)
-
+    lcw = LayoutCheckWidget()
+    lcw.show()

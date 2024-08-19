@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description/>
+ <version/>
+ <category>pymacros</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>true</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>python</interpreter>
+ <dsl-interpreter-name/>
+ <text>import os 
+import sys
+import pya
+
+dirPath   = os.path.dirname(__file__) 
+genPath   = lambda rPath : os.path.realpath(os.path.join(dirPath, *rPath.split("/")))
+iconPath  = genPath("../icon")
+libPath   = genPath("../python")
+
+for importPath in [libPath, iconPath]:
+    if not importPath in sys.path : sys.path.insert(0, importPath)
+
+import chk
+import fileExport
+import chkWidget 
+
+import ui_infoTable
+import ui_infoWidget
+import ui_headerSelCtrl 
+import ui_headerSelItem
+import ui_headerSelList
+import ui_main
+
+def rld():
+    from   importlib import reload  
+    reload(chk)
+    reload(fileExport)
+    reload(chkWidget)  
+     
+    reload(ui_infoTable)
+    reload(ui_infoWidget)
+    reload(ui_headerSelCtrl)
+    reload(ui_headerSelItem)
+    reload(ui_headerSelList)
+    reload(ui_main)
+rld()
+
+mainWindow    = pya.Application.instance().main_window()
+def callLayoutInfoWidget():
+    widget        = ui_main.LayoutChkWidget()
+    widget.show()
+
+              
+def bindMenu_LayoutInfoWidget():
+    menu            = pya.MainWindow.instance().menu()
+    action          = pya.Action()
+    action.title    = "Layout Info"
+    action.tool_tip = "Layout Info"
+    action.icon     = iconPath + "icon.png"
+    action.on_triggered(lambda : callLayoutInfoWidget())
+    menu.insert_item("@toolbar.end", "Layout Info", action) 
+     
+   
+bindMenu_LayoutInfoWidget()
+</text>
+</klayout-macro>

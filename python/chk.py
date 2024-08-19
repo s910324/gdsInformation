@@ -75,6 +75,115 @@ def cksum(filefullpath):
 	    buffer = open(filefullpath, 'rb').read()
 	    return ("%d %d" %  (memcrc(buffer), len(buffer)))
 	    
+def gdsFilesSummaryV2(fileFullPathList):
+    summary = []
+    
+    for fileFullPath in fileFullPathList:
+        layoutView   = pya.LayoutView()
+        cellView     = layoutView.cellview(layoutView.load_layout(fileFullPath))
+        layout       = cellView.layout()  
+        fileStats    = os.stat(fileFullPath)
+        topCellList  = [layout.cell(i) for i in layout.each_top_cell()]
+        checksum     = cksum(fileFullPath)
+        result       = {
+            "File name"       : os.path.basename(fileFullPath),
+            "Unit"            : f"{round(layout.dbu, 8)}",
+            "ckSum"           : checksum,
+            "ckSum hash"      : checksum.split(" ")[0],
+            "ckSum size"      : checksum.split(" ")[1],
+            "Top cell count"  : f"{len(topCellList)}",
+            "File size(byte)" : f"{fileStats.st_size:,}",
+            "File size(KB)"   : f"{round(fileStats.st_size/1024.0):,}",
+            "File size(MB)"   : f"{round(fileStats.st_size/1024.0/1024.0):,}",
+
+            "Layer count"     : f"{len(layout.layer_infos())}",
+            "Layer info"      : "; ".join([f"L({inf.layer},{inf.datatype})" for inf in layout.layer_infos()]),
+
+            "Cell name"       : "",
+            "Cell width"      : "0.0",
+            "Cell height"     : "0.0",
+
+            "Cell XLB"        : "0.0",
+            "Cell YLB"        : "0.0",
+            "Cell XRT"        : "0.0",
+            "Cell YRT"        : "0.0",
+            "Cell LB"         : "(0.0, 0.0)",
+            "Cell RT"         : "(0.0, 0.0)",
+            "Cell window"     : "(0.0, 0.0), (0.0, 0.0)",
+            "Origin"          : "Undefined",
+            "Warning"         : [],
+        }
+        
+        if not(topCellList):
+            result["Warning"] = "No top cell"
+            summary.append(result)
+            continue
+
+        if len(topCellList) > 1:
+            result["Warning"].append("Multiple top cell")
+
+        cell                  = topCellList[0]
+        cellBox               = cell.dbbox()
+        cellWidth, cellHeight = round(cellBox.width(), 8), round(cellBox.height(), 8)
+        cellP1x,   cellP1y    = round(cellBox.p1.x,    8), round(cellBox.p1.y,     8)
+        cellP2x,   cellP2y    = round(cellBox.p2.x,    8), round(cellBox.p2.y,     8)
+
+        result["Cell name"  ] = cell.name
+        result["Cell width" ] = f"{cellWidth}"
+        result["Cell height"] = f"{cellHeight}"
+        result["Cell XLB"   ] = f"{cellP1x}"
+        result["Cell YLB"   ] = f"{cellP1y}"
+        result["Cell XRT"   ] = f"{cellP2x}"
+        result["Cell YRT"   ] = f"{cellP2y}"
+        result["Cell LB"    ] = f"({cellP1x}, {cellP1y})"
+        result["Cell RT"    ] = f"({cellP2x}, {cellP2y})"
+        result["Cell window"] = f"({cellP1x}, {cellP1y}), ({cellP2x}, {cellP2y})"
+        
+        cellOrigin = "Undefined"
+        
+        if (cellP1x,cellP1y)==(0, 0) :  
+            cellOrigin = "Lower Left"
+            
+        elif (cellP1x,cellP1y)==(0, -cellHeight/2) :  
+            cellOrigin = "Center Left"     
+                
+        elif (cellP1x,cellP1y)==(0, -cellHeight) :  
+            cellOrigin = "Upper Left"
+            
+        elif (cellP1x,cellP1y)==(-cellWidth/2, 0) :  
+            cellOrigin = "Lower Center"
+            
+        elif (cellP1x,cellP1y)==(-cellWidth/2, -cellHeight/2) :  
+            cellOrigin = "Center"     
+                
+        elif (cellP1x,cellP1y)==(-cellWidth/2, -cellHeight) :  
+            cellOrigin = "Upper Center"
+                 
+        elif (cellP1x,cellP1y)==(-cellWidth, 0) :  
+            cellOrigin = "Lower Right"
+            
+        elif (cellP1x,cellP1y)==(-cellWidth, -cellHeight/2) :  
+            cellOrigin = "Center Right"     
+                
+        elif (cellP1x,cellP1y)==(-cellWidth, -cellHeight) :  
+            cellOrigin = "Upper Right"    
+        else:
+            cellOrigin = "Non Standard"
+            result["Warning"].append("Non-standard Cell origin")
+        
+        if not (cellWidth % 1) == 0:
+            result["Warning"].append("Cell width not integer")
+            
+        if not (cellHeight % 1) == 0:
+            result["Warning"].append("Cell height not integer")
+
+            
+        result["Warning"] = "; ".join(result["Warning"])
+        result["Origin"]  = cellOrigin
+        summary.append(result)
+
+    return summary
+
 def gdsFilesSummary(fileFullPathList):
     result = ["File Name|check Sum|file Size|Unit|cell Name|cad Window|cell Width|cell Heigth|cell Oigin"]
     for fileFullPath in fileFullPathList:
@@ -220,6 +329,7 @@ def listgds(folderPath):
 
         
 if __name__ == "__main__" :
+
     def manualCHK(folder):
       gdsList = listgds(folder)
       print(gdsFilesSummary(gdsList))
@@ -228,4 +338,6 @@ if __name__ == "__main__" :
         print(gdsInfo(g))
         
     folder = r"C:\Users\User\My Drive\Porotech\Project L\L 0.12 full mask\Master\output\PSMC_output"
-    manualCHK(folder)
+    #manualCHK(folder)
+
+    #print(gdsFilesSummaryV2(['C:/Users/User/My Drive/Porotech/Project L/L 0.12 full mask/Master/L012_20231102_FULL_POROTECH_PSMC.gds']))
