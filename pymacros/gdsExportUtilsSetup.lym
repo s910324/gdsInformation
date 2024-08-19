@@ -63,7 +63,7 @@ def bindMenu_LayoutInfoWidget():
     action          = pya.Action()
     action.title    = "Layout Info"
     action.tool_tip = "Layout Info"
-    action.icon     = iconPath + "icon.png"
+    action.icon     = iconPath + "\icon.png"
     action.on_triggered(lambda : callLayoutInfoWidget())
     menu.insert_item("@toolbar.end", "Layout Info", action) 
      
