@@ -43,24 +43,35 @@ class HeaderSelList(pya.QListWidget):
         self.data.pop(index)
         self.loadItems(self.data)
         
-    def saveSettings(self):      
+    def saveSettings(self, showOptions = False):      
         self.updateValue()
-        dirPath  = os.path.dirname(__file__) 
-        filepath = os.path.realpath(os.path.join(dirPath, "setting.pkl"))
-        with open(filepath, 'wb') as f:
-            pickle.dump(self.data, f)
-
-    def loadSettings(self):
-        dirPath  = os.path.dirname(__file__) 
-        filepath = os.path.realpath(os.path.join(dirPath, "setting.pkl"))
-
-        if not(os.path.isfile(filepath)) : return False
         
+        if showOptions :
+            filename = pya.QFileDialog.getSaveFileName(filter = "*gds_check_confg")
+            filepath = f'{filename}.gds_check_confg'
+        else:
+            dirPath  = os.path.dirname(__file__) 
+            filepath = os.path.realpath(os.path.join(dirPath, "setting.pkl"))
+
+        if filepath:
+            with open(filepath, 'wb') as f:
+                pickle.dump(self.data, f)
+                pya.QToolTip.showText(pya.QCursor.pos, f"File saved : {filepath}")
+        
+    def loadSettings(self, showOptions = False):
+        if showOptions:
+            filepath = pya.QFileDialog.getOpenFileName(filter = "*gds_check_confg")
+        else:
+            dirPath  = os.path.dirname(__file__) 
+            filepath = os.path.realpath(os.path.join(dirPath, "setting.pkl"))
+            
+        if not(os.path.isfile(filepath)) : return False
         with open(filepath, 'rb') as f:  
             try:
                 s = pickle.load(f)
                 if s:
                     self.loadItems(s)
+                    pya.QToolTip.showText(pya.QCursor.pos, f"File loaded : {filepath}")  
             except Exception:
                 pass
         return True
@@ -68,7 +79,9 @@ class HeaderSelList(pya.QListWidget):
     def closeEvent(self, event):
         self.saveSettings()
         event.accept()
-        
+
+            
+
 if __name__ == "__main__" :
     headers  = [
             "",

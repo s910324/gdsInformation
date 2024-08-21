@@ -16,10 +16,14 @@ class HeaderSelCtrl(pya.QListWidget):
         self.mvUpPB    = pya.QPushButton(icon = self.svgIcon("angle-up-solid"),     text = "")
         self.mvDownPB  = pya.QPushButton(icon = self.svgIcon("angle-down-solid"),   text = "")
         self.mvEndPB   = pya.QPushButton(icon = self.svgIcon("angles-down-solid"),  text = "")
+        
+        self.importPB  = pya.QPushButton(icon = self.svgIcon("upload-solid"),       text = "")
+        self.exportPB  = pya.QPushButton(icon = self.svgIcon("download-solid"),     text = "")
+        
         self.setPB     = pya.QPushButton(icon = self.svgIcon("circle-check-solid"), text = "")
         self.layout    = pya.QGridLayout()
         
-        self.layout.addWidget(self.listW,    0, 1,10, 1)
+        self.layout.addWidget(self.listW,    0, 1,12, 1)
         
         self.layout.addWidget(self.addPB,    0, 0, 1, 1)
         self.layout.addWidget(self.delPB,    1, 0, 1, 1)
@@ -27,11 +31,15 @@ class HeaderSelCtrl(pya.QListWidget):
         self.layout.addWidget(self.mvUpPB,   4, 0, 1, 1)
         self.layout.addWidget(self.mvDownPB, 5, 0, 1, 1)
         self.layout.addWidget(self.mvEndPB,  6, 0, 1, 1)
-        self.layout.addWidget(self.setPB,    8, 0, 1, 1)
         
-        self.layout.setRowMinimumHeight(2, 15)
-        self.layout.setRowStretch      (7,  1)
+        self.layout.addWidget(self.importPB, 8, 0, 1, 1)
+        self.layout.addWidget(self.exportPB, 9, 0, 1, 1)
         
+        self.layout.addWidget(self.setPB,   11, 0, 1, 1)
+        
+        self.layout.setRowMinimumHeight( 2, 15)
+        self.layout.setRowStretch      ( 7,  1)
+        self.layout.setRowStretch      (10,  1)
         self.setLayout(self.layout)
         self.layout.setSpacing(5)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -56,6 +64,8 @@ class HeaderSelCtrl(pya.QListWidget):
         self.mvDownPB.clicked.connect(self.mvDnItem)
         self.mvEndPB.clicked.connect(self.mvEndItem)     
         
+        self.importPB.clicked.connect(self.importSettings)   
+        self.exportPB.clicked.connect(self.exportSettings)   
     
     def headers(self):
         return self.listW.updateValue()
@@ -83,6 +93,12 @@ class HeaderSelCtrl(pya.QListWidget):
         index = self.listW.currentRow
         self.listW.mvItem(index,  self.listW.count)
     
+    def exportSettings(self):
+        self.listW.saveSettings(showOptions = True)
+        
+    def importSettings(self):
+        self.listW.loadSettings(showOptions = True)
+         
     def saveSettings(self):
         self.listW.saveSettings()
         
