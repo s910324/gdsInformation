@@ -1,7 +1,7 @@
 import os
 import pya
 import chk
-from   datetime import date
+from   datetime import datetime, date
 
 class CellExport(object):
     def __init__(self, cell):
@@ -116,14 +116,16 @@ class CellExport(object):
         return f"{fileFullPath}" 
 
         
-    def outputCell(self, layers = [], prefix = "", suffix = "", fmt = "GDS2",
+    def outputCell(self, layers = [], prefix = "", suffix = "", date = True, time = True, fmt = "GDS2",
         mapping = False, flip = False, flat = False, merge = False, replace = False, **kwargs):
         
         mainWindow = pya.Application.instance().main_window()
         layoutView = mainWindow.current_view()                
         cellView   = layoutView.active_cellview() 
         
-        nowDate    = date.today().strftime("%Y%m%d")
+        nowDate    = ("_" + datetime.now().strftime("%Y%m%d")) if date else ""
+        nowTime    = ("_" + datetime.now().strftime("%H%M"))   if time else ""
+        
         prefix     = f"{prefix}_" if prefix else prefix
         suffix     = f"_{suffix}" if suffix else suffix
         filefmt    =  {"GDS2" : "gds", "GDS" : "gds", "DXF" : "dxf"}[fmt.upper()]
@@ -136,7 +138,7 @@ class CellExport(object):
         ])
         
         cellName   = self.cell.name
-        fileName   = f"{prefix}{cellName}{suffix}_{nowDate}{attri}.{filefmt}"
+        fileName   = f"{prefix}{cellName}{suffix}{nowDate}{nowTime}{attri}.{filefmt}"
         self.processCell(layers, flip = flip, flat = flat, merge = merge, replace = replace)
         self.saveCell(folderPath, fileName, layers = layers, fmt = fmt, mapping = mapping)
    
